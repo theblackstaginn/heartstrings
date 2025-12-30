@@ -100,10 +100,10 @@
   }
 
   /* ===========================
-     EMBERS (MOBILE-SAFE)
+     EMBERS (MOBILE VISIBLE)
      - time-based movement
      - iOS visualViewport sizing
-     - minimum pixel radius so embers exist on phones
+     - minimum pixel radius so embers show on phones
      =========================== */
 
   function startEmbers() {
@@ -115,17 +115,15 @@
 
     let W = 0, H = 0, dpr = 1;
 
-    // Feel controls (slow + ember-like)
     const TARGET_COUNT = 80;
-    const SPEED_MIN = 0.018;        // slower
+    const SPEED_MIN = 0.018;
     const SPEED_MAX = 0.055;
     const ALPHA_MIN = 0.14;
     const ALPHA_MAX = 0.38;
-    const WOBBLE_SPEED = 0.65;      // radians/sec
-    const DRIFT_STRENGTH = 0.008;   // normalized units/sec
+    const WOBBLE_SPEED = 0.65;     // radians/sec
+    const DRIFT_STRENGTH = 0.008;  // normalized units/sec
 
-    // Critical: guarantee visibility on small screens
-    const MIN_RADIUS_PX = 1.2;      // <-- this is why mobile was "empty"
+    const MIN_RADIUS_PX = 1.2;
     const MAX_RADIUS_PX = 3.6;
 
     const parts = [];
@@ -134,7 +132,7 @@
       return {
         x: Math.random(),
         y: Math.random(),
-        r: 0.9 + Math.random() * 2.2,  // "intent" radius; final is clamped in pixels
+        r: 0.9 + Math.random() * 2.2,
         v: SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN),
         a: ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN),
         wob: Math.random() * Math.PI * 2
@@ -199,16 +197,16 @@
 
         ctx.globalAlpha = p.a;
 
-        // Convert intent radius to pixels, clamp so mobile is visible
-        const widthScale = Math.max(0.6, Math.min(1.15, W / 900)); // gentle
+        const widthScale = Math.max(0.6, Math.min(1.15, W / 900));
         const rPx = Math.max(MIN_RADIUS_PX, Math.min(MAX_RADIUS_PX, p.r * widthScale));
 
-        // Soft glow: draw twice (core + halo) for visibility without "spark" vibe
+        // halo
         ctx.beginPath();
         ctx.arc(x, y, rPx * 1.8, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255,140,70,0.55)";
         ctx.fill();
 
+        // core
         ctx.beginPath();
         ctx.arc(x, y, rPx, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255,175,95,1)";
