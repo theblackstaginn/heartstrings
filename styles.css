@@ -42,12 +42,13 @@ html, body{
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 }
 
-/* Background atmosphere */
+/* Background atmosphere (INTEGRATED apoth-bg.png) */
 body{
   background:
     radial-gradient(120% 90% at 50% 12%, rgba(255,255,255,.035), transparent 60%),
     radial-gradient(120% 120% at 50% 52%, transparent 58%, rgba(0,0,0,.68) 100%),
-    linear-gradient(180deg, rgba(11,15,20,.92) 0%, rgba(7,10,15,.96) 100%);
+    url("assets/apoth-bg.png") center / 1400px repeat,
+    linear-gradient(180deg, #0b1a16 0%, #07110f 100%);
 }
 
 /* Embers canvas sits behind stage content */
