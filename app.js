@@ -1,204 +1,172 @@
 (() => {
   "use strict";
 
-  // --- CONTENT DATA (edit freely) ---
-  // Keep it minimal on day one. Add inventory later.
-  const SECTIONS = [
+  /* ===========================
+     HEARTSTRINGS OFFERINGS DATA
+     =========================== */
+
+  const OFFERINGS = [
     {
       title: "Tarot & Oracles",
-      note: "Decks, spreads, and paper relics.",
       items: [
-        { name: "Lost in Arcadia Tarot (pre-launch)", desc: "A quiet, ruin-lit deck in development.", price: "", badge: "Coming Soon" },
-        { name: "Utility Frames & Templates", desc: "Infrastructure for creators. Clean. Honest.", price: "", badge: "Seasonal" }
+        { name: "Lost in Arcadia Tarot (pre-launch)", price: "Coming Soon", desc: "A quiet, ruin-lit deck in development." },
+        { name: "Utility Frames & Templates", price: "Seasonal", desc: "Infrastructure for creators. Clean. Honest." }
       ]
     },
     {
       title: "Ritual Tools",
-      note: "Practical magic, not theater.",
       items: [
-        { name: "Candles & Holders", desc: "For focus, offerings, and steady light.", price: "", badge: "" },
-        { name: "Incense & Resins", desc: "Smoke as signal: cleanse, call, settle.", price: "", badge: "" },
-        { name: "Altar Goods", desc: "Bowls, cloths, vessels—quiet fundamentals.", price: "", badge: "" }
+        { name: "Candles & Holders", price: "", desc: "For focus, offerings, and steady light." },
+        { name: "Incense & Resins", price: "", desc: "Smoke as signal: cleanse, call, settle." }
       ]
     },
     {
-      title: "Remedies & Comfort",
-      note: "Body-honoring, calm-first.",
+      title: "Signature Teas & Infusions",
       items: [
-        { name: "Tea Blends", desc: "Evening, grounding, and hearth-warm cups.", price: "", badge: "" },
-        { name: "Bath Rituals", desc: "Salts, oils, and slow restoration.", price: "", badge: "" }
+        { name: "Loose-Leaf Tea Tin (2 oz)", price: "$14", desc: "Rotating: calming herbs, bright mints, or seasonal botanicals." },
+        { name: "Loose-Leaf Tea Tin (4 oz)", price: "$24", desc: "Same blends—bigger tin for regulars." },
+        { name: "Tea Sachet Pack (10)", price: "$12", desc: "Convenient sachets for travel, gifts, and quick mornings." },
+        { name: "Infusion Sampler (4 mini tins)", price: "$28", desc: "A curated flight: calm • bright • grounding • seasonal." },
+        { name: "Tea Infuser (stainless)", price: "$10", desc: "A simple tool that makes loose-leaf feel effortless." }
       ]
     },
     {
-      title: "Curiosities",
-      note: "Objects with a past—or the illusion of one.",
+      title: "Candles & Incense",
       items: [
-        { name: "Books & Field Notes", desc: "Folklore, craft, and the long memory.", price: "", badge: "" },
-        { name: "Seals, Papers, & Wax", desc: "Marks that make the moment real.", price: "", badge: "" }
+        { name: "Small-Batch Candle (8 oz)", price: "$18", desc: "Core scents + seasonal pours." },
+        { name: "Ritual Taper Set (2)", price: "$12", desc: "Classic tapers for altars, dinners, and mood-setting." },
+        { name: "Incense Sticks (bundle)", price: "$8", desc: "Aromatic staples: resinous, herbal, or smoky woods." },
+        { name: "Resin Incense (jar)", price: "$14", desc: "For deeper burn + old-world atmosphere." },
+        { name: "Charcoal Discs (pack)", price: "$6", desc: "For resin incense—simple and essential." },
+        { name: "Ritual Matches", price: "$7", desc: "Because tiny details matter." }
+      ]
+    },
+    {
+      title: "Tinctures & Bitters",
+      items: [
+        { name: "Botanical Tincture (1 oz)", price: "$22", desc: "Rotating focus: calm • clarity • comfort." },
+        { name: "Botanical Tincture (2 oz)", price: "$38", desc: "Same rotation—larger bottle for frequent use." },
+        { name: "Cocktail Bitters (4 oz)", price: "$16", desc: "Citrus • spice • aromatic profiles." },
+        { name: "Digestive Bitters (2 oz)", price: "$14", desc: "Old-world bitter botanicals—traditional, bold, useful." }
+      ]
+    },
+    {
+      title: "Charms & Keepsakes",
+      items: [
+        { name: "Pocket Charm (stone / token)", price: "$8", desc: "Small, weighted, meant to travel." },
+        { name: "Protection Sachet (herbal pouch)", price: "$12", desc: "Herbs + botanicals in a simple cloth pouch." },
+        { name: "Amulet Necklace", price: "$22", desc: "Symbolic pieces—quiet, wearable, and intentional." },
+        { name: "Keepsake Token", price: "$10", desc: "A tiny story object—meant to be held and remembered." },
+        { name: "Mini Altar Dish (small)", price: "$14", desc: "For offerings, rings, crystals, or ritual salt." }
       ]
     }
   ];
 
-  // --- Render ---
-  const content = document.getElementById("content");
-  const yr = document.getElementById("yr");
-  if (yr) yr.textContent = String(new Date().getFullYear());
+  /* ===========================
+     RENDER
+     =========================== */
 
-  function el(tag, cls, text){
-    const n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text != null) n.textContent = text;
-    return n;
+  function escapeHtml(s) {
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  function render(){
-    content.innerHTML = "";
-    for (const sec of SECTIONS){
-      const card = el("section", "section");
-      const head = el("div", "sectionHead");
-      head.appendChild(el("h2", "sectionTitle", sec.title));
-      head.appendChild(el("div", "sectionNote", sec.note || ""));
-      card.appendChild(head);
+  function render() {
+    const menuEl = document.getElementById("menu");
+    if (!menuEl) return;
 
-      const items = el("div", "items");
-      for (const it of sec.items){
-        const row = el("div", "item");
-        const left = el("div", "left");
-        left.appendChild(el("p", "name", it.name));
-        if (it.desc) left.appendChild(el("p", "desc", it.desc));
+    menuEl.innerHTML = OFFERINGS.map(section => {
+      const items = (section.items || []).map(it => `
+        <div class="item">
+          <div class="left">
+            <div class="name">${escapeHtml(it.name)}</div>
+            ${it.desc ? `<div class="desc">${escapeHtml(it.desc)}</div>` : ``}
+          </div>
+          ${it.price ? `<div class="price copper">${escapeHtml(it.price)}</div>` : `<div class="price"></div>`}
+        </div>
+      `).join("");
 
-        const right = el("div", "right");
-        if (it.badge) right.appendChild(el("span", "badge", it.badge));
-        if (it.price) right.appendChild(el("span", "price", it.price));
+      return `
+        <div class="section">
+          <div class="sectionTitle copper">${escapeHtml(section.title)}</div>
+          ${items}
+        </div>
+      `;
+    }).join("");
 
-        row.appendChild(left);
-        row.appendChild(right);
-        items.appendChild(row);
-      }
-      card.appendChild(items);
-      content.appendChild(card);
+    // optional: wire “Browse Offerings” to scroll top
+    const orderBtn = document.getElementById("orderBtn");
+    if (orderBtn) {
+      orderBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        menuEl.scrollTo({ top: 0, behavior: "smooth" });
+      });
     }
   }
 
-  render();
+  /* ===========================
+     MINIMAL EMBERS (safe)
+     =========================== */
 
-  // --- Embers (quiet, slow, non-intrusive) ---
-  // No hard colors set; we derive ember tint from copper tone indirectly via alpha and blending.
-  const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const canvas = document.getElementById("embers");
-  const ctx = canvas?.getContext?.("2d");
+  function startEmbers() {
+    const c = document.getElementById("embers");
+    if (!c) return;
+    const ctx = c.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
-  if (canvas && ctx && !prefersReduced){
-    const DPR = Math.min(window.devicePixelRatio || 1, 2);
     let W = 0, H = 0;
-    let particles = [];
-    let lastT = performance.now();
+    const parts = Array.from({ length: 90 }, () => ({
+      x: Math.random(), y: Math.random(),
+      r: 0.6 + Math.random() * 1.6,
+      v: 0.03 + Math.random() * 0.10,
+      a: 0.15 + Math.random() * 0.35
+    }));
 
-    function resize(){
-      W = Math.floor(window.innerWidth);
-      H = Math.floor(window.innerHeight);
-      canvas.width = Math.floor(W * DPR);
-      canvas.height = Math.floor(H * DPR);
-      canvas.style.width = W + "px";
-      canvas.style.height = H + "px";
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    function resize() {
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      W = Math.floor(window.innerWidth * dpr);
+      H = Math.floor(window.innerHeight * dpr);
+      c.width = W; c.height = H;
+      c.style.width = "100%";
+      c.style.height = "100%";
+      ctx.setTransform(1,0,0,1,0,0);
     }
 
-    function rand(a,b){ return a + Math.random()*(b-a); }
-
-    function seed(){
-      // Fewer particles than the menu version: calm, not spectacle
-      const count = Math.round(Math.min(90, Math.max(45, (W*H)/22000)));
-      particles = [];
-      for (let i=0;i<count;i++){
-        particles.push({
-          x: rand(0,W),
-          y: rand(H*0.45, H),
-          r: rand(0.8, 2.2),
-          vy: rand(10, 26),         // slow rise
-          vx: rand(-6, 6),
-          life: rand(2.8, 6.2),
-          age: rand(0, 6),
-          glow: rand(0.08, 0.22)
-        });
-      }
-    }
-
-    function step(t){
-      const dt = Math.min(0.033, (t - lastT)/1000);
-      lastT = t;
-
+    function tick() {
       ctx.clearRect(0,0,W,H);
-
-      // Gentle vignette-like dim at edges (subtle)
-      ctx.save();
-      ctx.globalAlpha = 0.12;
-      const g = ctx.createRadialGradient(W/2, H*0.35, Math.min(W,H)*0.10, W/2, H*0.35, Math.min(W,H)*0.75);
-      g.addColorStop(0, "rgba(255,255,255,0)");
-      g.addColorStop(1, "rgba(0,0,0,1)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,W,H);
-      ctx.restore();
-
-      ctx.save();
       ctx.globalCompositeOperation = "lighter";
 
-      for (const p of particles){
-        p.age += dt;
-        p.x += p.vx * dt;
-        p.y -= p.vy * dt;
+      for (const p of parts) {
+        p.y -= p.v * 0.6;
+        p.x += Math.sin((p.y * 6.0) + p.r) * 0.0008;
+        if (p.y < -0.05) { p.y = 1.05; p.x = Math.random(); }
 
-        // Keep embers away from the border edges: soft containment
-        const inset = 34;
-        if (p.x < inset) p.x = inset;
-        if (p.x > W - inset) p.x = W - inset;
+        const x = p.x * W;
+        const y = p.y * H;
 
-        // Drift gently
-        p.vx += rand(-2,2) * dt;
-        p.vx *= 0.985;
-
-        // Fade in/out
-        const k = Math.min(1, Math.max(0, p.age / 0.9)) * Math.min(1, Math.max(0, (p.life - p.age) / 1.2));
-        const a = k * (0.55 * p.glow);
-
-        // Ember “spark” (warm-ish via blending; no hard hue)
-        ctx.globalAlpha = a;
+        ctx.globalAlpha = p.a;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle = "rgba(255,200,150,1)"; // slight warmth; blended and low alpha
+        ctx.arc(x, y, p.r * (W/1400), 0, Math.PI*2);
+        ctx.fillStyle = "rgba(255,170,90,1)";
         ctx.fill();
-
-        // Reset particle when dead or too high
-        if (p.age > p.life || p.y < H*0.12){
-          p.x = rand(inset, W - inset);
-          p.y = rand(H*0.60, H);
-          p.r = rand(0.8, 2.2);
-          p.vy = rand(10, 26);
-          p.vx = rand(-6, 6);
-          p.life = rand(2.8, 6.2);
-          p.age = 0;
-          p.glow = rand(0.08, 0.22);
-        }
       }
 
-      ctx.restore();
-      requestAnimationFrame(step);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      requestAnimationFrame(tick);
     }
 
-    window.addEventListener("resize", () => {
-      resize();
-      seed();
-    }, { passive:true });
-
     resize();
-    seed();
-    requestAnimationFrame(step);
+    window.addEventListener("resize", resize, { passive: true });
+    requestAnimationFrame(tick);
   }
 
-  // --- PWA offline caching ---
-  if ("serviceWorker" in navigator){
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
-    });
-  }
+  document.addEventListener("DOMContentLoaded", () => {
+    render();
+    startEmbers();
+  });
 })();
