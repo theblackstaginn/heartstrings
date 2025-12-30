@@ -53,7 +53,7 @@
   --sectionMaxW: 760px;
 
   /* Embers */
-  --emberOpacity: .55;
+  --emberOpacity: .85;
 }
 
 *{ box-sizing:border-box; }
