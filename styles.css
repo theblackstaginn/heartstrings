@@ -1,10 +1,9 @@
 /* ===========================
    HEARTSTRINGS — MENU CHASSIS + FX
-   Menu-page identical behavior:
    - Panel is fixed viewport
    - Only menu region scrolls
    - Embers behind
-   - Fullscreen frame overlay on top (like rune border)
+   - Fullscreen frame overlay on top
    =========================== */
 
 :root{
@@ -15,7 +14,7 @@
   --bg0:#050609;
   --bg1:#0b0e13;
 
-  /* Heartstrings background texture */
+  /* Heartstrings background texture (BASE) */
   --charcoalTex: url("assets/apoth-bg.png");
 
   /* Heartstrings frame overlay (FULLSCREEN) */
@@ -40,7 +39,7 @@
   --pad: clamp(14px, 2.2vw, 22px);
   --radius: 18px;
 
-  /* Kept for spacing logic (same as menu page) */
+  /* Spacing logic */
   --wardSafeX: 34px;
   --wardSafeY: 44px;
 
@@ -61,19 +60,27 @@
 html, body{
   height: 100%;
   margin: 0;
+  padding: 0;
+  background: var(--bg0); /* HARD fallback (kills any white) */
 }
 
 body{
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   color: var(--text);
 
-  /* ✅ critical: body never scrolls (menu scrolls inside panel) */
+  /* ✅ critical: body never scrolls */
   overflow: hidden;
 
+  /* ✅ FIX: apoth-bg is the REAL base background (not just a blend overlay) */
   background:
     radial-gradient(120% 90% at 50% 12%, rgba(255,255,255,.05), transparent 60%),
     radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.82) 100%),
-    linear-gradient(180deg, var(--bg1), var(--bg0));
+    linear-gradient(180deg, rgba(11,14,19,.72), rgba(5,6,9,.92)),
+    var(--charcoalTex);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover, cover;
+  background-position: center, center, center, center;
+  background-attachment: scroll, scroll, scroll, scroll;
 }
 
 /* film grain */
@@ -89,18 +96,18 @@ body::before{
     repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.02) 1px 3px);
 }
 
-/* texture */
+/* OPTIONAL: extra texture shimmer (safe; not required for “no white”) */
 body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: .30;
+  opacity: .14;                 /* reduced so it can't “wash out” */
   background-image: var(--charcoalTex);
   background-repeat: repeat;
-  background-size: 1000px 1000px;
-  mix-blend-mode: soft-light;
+  background-size: 900px 900px;
+  mix-blend-mode: overlay;       /* gentler than soft-light in dark scenes */
 }
 
 /* FX canvases (never block interaction) */
@@ -112,9 +119,9 @@ body::after{
   pointer-events: none;
 }
 #embers{ z-index: 1; opacity: var(--emberOpacity); }
-#runes{ z-index: 5; opacity: 0; } /* parity only */
+#runes{ z-index: 5; opacity: 0; }
 
-/* ✅ FULLSCREEN frame overlay (fits any screen like rune border) */
+/* ✅ FULLSCREEN frame overlay */
 .frame{
   position: fixed;
   inset: 0;
@@ -123,7 +130,8 @@ body::after{
 
   background-image: var(--frameImg);
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 100% 100%; /* stretch to fit any screen */
+  background-position: center;
   opacity: var(--frameOpacity);
 
   filter: drop-shadow(0 18px 45px rgba(0,0,0,.62));
@@ -144,7 +152,6 @@ body::after{
   border-radius: var(--radius);
   overflow: hidden;
 
-  /* clear “glass” panel */
   background: linear-gradient(180deg, rgba(6,8,10,.22), rgba(6,8,10,.08));
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
@@ -153,22 +160,10 @@ body::after{
   border: 1px solid rgba(255,255,255,.06);
 }
 
-/* Copper utility */
-.copper{
-  background: var(--copperGrad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  text-shadow:
-    0 2px 0 rgba(0,0,0,.55),
-    0 14px 26px rgba(0,0,0,.72);
-}
-
 /* Header */
 .top{
   padding: var(--pad);
-  padding-top: calc(var(--pad) + 10px); 
+  padding-top: calc(var(--pad) + 10px);
   text-align: center;
   border-bottom: 1px solid var(--rule);
   position: relative;
@@ -201,7 +196,7 @@ body::after{
   padding-inline: var(--btnRailPad);
 }
 
-/* Square copper buttons */
+/* Buttons */
 .cornerBtn{
   width: 92px;
   height: 44px;
@@ -260,7 +255,6 @@ body::after{
   position: relative;
   z-index: 4;
 
-  /* Fix “text too wide” */
   max-width: var(--menuMaxW);
   margin-inline: auto;
 }
@@ -320,6 +314,31 @@ body::after{
   z-index: 4;
 }
 
+/* Primary text -> copper */
+.kicker,
+.sectionTitle,
+.name,
+.price{
+  background: var(--copperGrad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.55),
+    0 14px 26px rgba(0,0,0,.72);
+}
+
+/* Small text stays whitish */
+.town,
+.sub,
+.desc,
+.footerNote{
+  color: var(--muted);
+  -webkit-text-fill-color: initial;
+  background: none;
+}
+
 /* ===========================
    MOBILE
    =========================== */
@@ -368,28 +387,4 @@ body::after{
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   #embers{ display: none; }
-}
-/* Primary text -> copper */
-.kicker,
-.sectionTitle,
-.name,
-.price{
-background: var(--copperGrad);
--webkit-background-clip:text;
-background-clip:text;
-color: transparent;
--webkit-text-fill-color: transparent;
-text-shadow:
-0 2px 0 rgba(0,0,0,.55),
-0 14px 26px rgba(0,0,0,.72);
-}
-
-/* Small text stays whitish */
-.town,
-.sub,
-.desc,
-.footerNote{
-color: var(--muted);
--webkit-text-fill-color: initial;
-background: none;
 }
