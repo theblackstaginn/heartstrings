@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Heartstrings Apothecary</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Embers layer (canvas) -->
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <main class="stage" aria-label="Heartstrings Apothecary">
+    <!-- Frame/border image (you supply asset) -->
+    <div class="border" aria-hidden="true"></div>
+
+    <!-- Scrollable content area inside the frame -->
+    <section class="panel" role="region" aria-label="Apothecary content" tabindex="0">
+      <header class="head">
+        <div class="brand">
+          <div class="sigil" aria-hidden="true"></div>
+          <div class="titles">
+            <h1>Heartstrings Apothecary</h1>
+            <p class="tag">Ritual goods, remedies, and quiet curiosities.</p>
+          </div>
+        </div>
+
+        <div class="meta">
+          <div class="pill">Dahlonega, GA</div>
+          <div class="pill">Inside The Black Stag Inn</div>
+        </div>
+      </header>
+
+      <div class="rule" aria-hidden="true"></div>
+
+      <div id="content" class="content" aria-live="polite"></div>
+
+      <footer class="foot">
+        <div class="rule soft" aria-hidden="true"></div>
+
+        <div class="fine">
+          <div class="fineRow">
+            <span class="label">Note</span>
+            <span class="value">
+              Our items are ritual tools and curios. Nothing here replaces professional medical care.
+            </span>
+          </div>
+          <div class="fineRow">
+            <span class="label">Hours</span>
+            <span class="value">Seasonal — updated in-store.</span>
+          </div>
+          <div class="fineRow">
+            <span class="label">Contact</span>
+            <span class="value">Ask at the front desk.</span>
+          </div>
+        </div>
+
+        <div class="copyright">
+          © <span id="yr"></span> Heartstrings Apothecary
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
