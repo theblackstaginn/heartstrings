@@ -100,8 +100,9 @@
   }
 
   /* ===========================
-     EMBERS (slower + brighter)
-     DPR-correct + stable speed
+     EMBERS (TRUE SLOW MODE)
+     - time-based movement (DPR + refresh-rate safe)
+     - slower spawn + slower rise
      =========================== */
 
   function startEmbers() {
@@ -113,71 +114,84 @@
 
     let W = 0, H = 0, dpr = 1;
 
-    // These values control “feel”
-    const TARGET_COUNT = 110;     // more than 90 = more visible
-    const SPEED_MIN = 0.008;      // slower than before
-    const SPEED_MAX = 0.028;
-    const ALPHA_MIN = 0.22;       // brighter than before
-    const ALPHA_MAX = 0.55;
+    // Feel controls
+    const TARGET_COUNT = 85;        // fewer particles reads "embers", not "sparks"
+    const SPEED_MIN = 0.035;        // units per second in normalized space (y 0..1)
+    const SPEED_MAX = 0.090;        // slower than your per-frame version
+    const ALPHA_MIN = 0.16;         // slightly dimmer = less "busy"
+    const ALPHA_MAX = 0.42;
+    const WOBBLE_SPEED = 0.75;      // radians/sec
+    const DRIFT_STRENGTH = 0.010;   // normalized units/sec (tiny)
 
     const parts = [];
 
+    function makeParticle() {
+      return {
+        x: Math.random(),
+        y: Math.random(),
+        r: 0.9 + Math.random() * 2.1,
+        v: SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN),
+        a: ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN),
+        wob: Math.random() * Math.PI * 2
+      };
+    }
+
     function resize() {
       dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      W = Math.floor(window.innerWidth);
-      H = Math.floor(window.innerHeight);
+      W = Math.max(1, Math.floor(window.innerWidth));
+      H = Math.max(1, Math.floor(window.innerHeight));
 
       c.width = Math.floor(W * dpr);
       c.height = Math.floor(H * dpr);
       c.style.width = "100%";
       c.style.height = "100%";
 
-      // Draw in CSS pixels; scale once via transform
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Ensure we have the right number of particles
       parts.length = 0;
-      for (let i = 0; i < TARGET_COUNT; i++) {
-        parts.push({
-          x: Math.random(),
-          y: Math.random(),
-          r: 0.8 + Math.random() * 2.0,
-          v: SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN),
-          a: ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN),
-          wob: Math.random() * Math.PI * 2
-        });
-      }
+      for (let i = 0; i < TARGET_COUNT; i++) parts.push(makeParticle());
     }
 
-    function tick() {
+    let lastT = performance.now();
+
+    function tick(now) {
+      // delta time in seconds (clamped to avoid tab-switch jumps)
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000));
+      lastT = now;
+
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
 
       for (const p of parts) {
-        // slower upward motion in normalized space
-        p.y -= p.v;
+        // rise (time-based)
+        p.y -= p.v * dt;
 
-        // gentle drift + wobble
-        p.wob += 0.015;
-        p.x += Math.sin(p.wob + p.y * 3.2) * 0.00055;
+        // drift + wobble (time-based)
+        p.wob += WOBBLE_SPEED * dt;
+        p.x += Math.sin(p.wob + p.y * 3.2) * (DRIFT_STRENGTH * dt);
 
-        // respawn bottom
+        // wrap / respawn
         if (p.y < -0.08) {
           p.y = 1.08;
           p.x = Math.random();
           p.v = SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN);
           p.a = ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN);
-          p.r = 0.8 + Math.random() * 2.0;
+          p.r = 0.9 + Math.random() * 2.1;
           p.wob = Math.random() * Math.PI * 2;
         }
+
+        // keep x in range without snapping
+        if (p.x < -0.05) p.x = 1.05;
+        if (p.x > 1.05) p.x = -0.05;
 
         const x = p.x * W;
         const y = p.y * H;
 
         ctx.globalAlpha = p.a;
 
-        // glow blob
-        const radius = p.r * (W / 1200);
+        // scale particle radius gently with screen width
+        const radius = p.r * (W / 1600);
+
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255,170,90,1)";
