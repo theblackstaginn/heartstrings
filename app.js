@@ -86,71 +86,100 @@
             <div class="name">${escapeHtml(it.name)}</div>
             ${it.desc ? `<div class="desc">${escapeHtml(it.desc)}</div>` : ``}
           </div>
-          ${it.price ? `<div class="price copper">${escapeHtml(it.price)}</div>` : `<div class="price"></div>`}
+          ${it.price ? `<div class="price">${escapeHtml(it.price)}</div>` : `<div class="price"></div>`}
         </div>
       `).join("");
 
       return `
         <div class="section">
-          <div class="sectionTitle copper">${escapeHtml(section.title)}</div>
+          <div class="sectionTitle">${escapeHtml(section.title)}</div>
           ${items}
         </div>
       `;
     }).join("");
-
-    // optional: wire “Browse Offerings” to scroll top
-    const orderBtn = document.getElementById("orderBtn");
-    if (orderBtn) {
-      orderBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        menuEl.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    }
   }
 
   /* ===========================
-     MINIMAL EMBERS (safe)
+     EMBERS (slower + brighter)
+     DPR-correct + stable speed
      =========================== */
 
   function startEmbers() {
     const c = document.getElementById("embers");
     if (!c) return;
+
     const ctx = c.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    let W = 0, H = 0;
-    const parts = Array.from({ length: 90 }, () => ({
-      x: Math.random(), y: Math.random(),
-      r: 0.6 + Math.random() * 1.6,
-      v: 0.03 + Math.random() * 0.10,
-      a: 0.15 + Math.random() * 0.35
-    }));
+    let W = 0, H = 0, dpr = 1;
+
+    // These values control “feel”
+    const TARGET_COUNT = 110;     // more than 90 = more visible
+    const SPEED_MIN = 0.008;      // slower than before
+    const SPEED_MAX = 0.028;
+    const ALPHA_MIN = 0.22;       // brighter than before
+    const ALPHA_MAX = 0.55;
+
+    const parts = [];
 
     function resize() {
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      W = Math.floor(window.innerWidth * dpr);
-      H = Math.floor(window.innerHeight * dpr);
-      c.width = W; c.height = H;
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+
+      c.width = Math.floor(W * dpr);
+      c.height = Math.floor(H * dpr);
       c.style.width = "100%";
       c.style.height = "100%";
-      ctx.setTransform(1,0,0,1,0,0);
+
+      // Draw in CSS pixels; scale once via transform
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Ensure we have the right number of particles
+      parts.length = 0;
+      for (let i = 0; i < TARGET_COUNT; i++) {
+        parts.push({
+          x: Math.random(),
+          y: Math.random(),
+          r: 0.8 + Math.random() * 2.0,
+          v: SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN),
+          a: ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN),
+          wob: Math.random() * Math.PI * 2
+        });
+      }
     }
 
     function tick() {
-      ctx.clearRect(0,0,W,H);
+      ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
 
       for (const p of parts) {
-        p.y -= p.v * 0.6;
-        p.x += Math.sin((p.y * 6.0) + p.r) * 0.0008;
-        if (p.y < -0.05) { p.y = 1.05; p.x = Math.random(); }
+        // slower upward motion in normalized space
+        p.y -= p.v;
+
+        // gentle drift + wobble
+        p.wob += 0.015;
+        p.x += Math.sin(p.wob + p.y * 3.2) * 0.00055;
+
+        // respawn bottom
+        if (p.y < -0.08) {
+          p.y = 1.08;
+          p.x = Math.random();
+          p.v = SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN);
+          p.a = ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN);
+          p.r = 0.8 + Math.random() * 2.0;
+          p.wob = Math.random() * Math.PI * 2;
+        }
 
         const x = p.x * W;
         const y = p.y * H;
 
         ctx.globalAlpha = p.a;
+
+        // glow blob
+        const radius = p.r * (W / 1200);
         ctx.beginPath();
-        ctx.arc(x, y, p.r * (W/1400), 0, Math.PI*2);
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255,170,90,1)";
         ctx.fill();
       }
