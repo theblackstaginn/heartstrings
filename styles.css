@@ -141,7 +141,7 @@ body::after{
   position: relative;
   z-index: 3;
 
-  width: min(980px, 92vw);
+  width: min(900px, 84vw);
   height: min(92vh, 980px);
   margin: clamp(16px, 3.5vh, 44px) auto;
 
