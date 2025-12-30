@@ -17,6 +17,9 @@
   <!-- keep rune canvas for parity (we’ll just not draw runes on Heartstrings) -->
   <canvas id="runes" aria-hidden="true"></canvas>
 
+  <!-- ✅ NEW: full-screen frame overlay (fits any screen like rune border) -->
+  <div class="frame" aria-hidden="true"></div>
+
   <main class="panel" aria-label="Heartstrings Apothecary">
     <header class="top">
       <div class="kicker copper">HEARTSTRINGS APOTHECARY</div>
@@ -31,6 +34,7 @@
       <div class="sub copper">Small-batch • Rotating seasonally • Prices as listed</div>
     </header>
 
+    <!-- ✅ MUST be id="menu" so scrolling works -->
     <section class="menu" id="menu" role="region" aria-label="Apothecary offerings">
       <div class="loading">Loading offerings…</div>
     </section>
