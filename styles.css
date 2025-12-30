@@ -168,6 +168,7 @@ body::after{
 /* Header */
 .top{
   padding: var(--pad);
+  padding-top: calc(var(--pad) + 10px); 
   text-align: center;
   border-bottom: 1px solid var(--rule);
   position: relative;
@@ -367,4 +368,28 @@ body::after{
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   #embers{ display: none; }
+}
+/* Primary text -> copper */
+.kicker,
+.sectionTitle,
+.name,
+.price{
+background: var(--copperGrad);
+-webkit-background-clip:text;
+background-clip:text;
+color: transparent;
+-webkit-text-fill-color: transparent;
+text-shadow:
+0 2px 0 rgba(0,0,0,.55),
+0 14px 26px rgba(0,0,0,.72);
+}
+
+/* Small text stays whitish */
+.town,
+.sub,
+.desc,
+.footerNote{
+color: var(--muted);
+-webkit-text-fill-color: initial;
+background: none;
 }
