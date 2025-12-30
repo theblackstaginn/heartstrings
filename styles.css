@@ -348,6 +348,39 @@ body::after{
     --sectionMaxW: 92vw;
   }
 
+  /* PANEL: fully transparent on mobile */
+  .panel{
+    width: 86vw;
+
+    background: none;                 /* 🔥 glass removed */
+    backdrop-filter: none;            /* 🔥 blur off */
+    -webkit-backdrop-filter: none;
+    border: none;                     /* optional, cleaner */
+    box-shadow: none;                 /* optional, cleaner */
+  }
+
+  .cornerBtn{
+    width: 68px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: 10px;
+    letter-spacing: 1.4px;
+  }
+
+  .name{ font-size: clamp(17px, 4.6vw, 22px); }
+  .price{ font-size: clamp(15px, 4.2vw, 20px); }
+
+  /* Copper stays stable on iOS */
+  .kicker,
+  .sectionTitle,
+  .name,
+  .price{
+    background: none;
+    color: var(--c2);
+    -webkit-text-fill-color: var(--c2);
+  }
+}
+
   /* ✅ pulled in on mobile (was 94vw) */
   .panel{ width: 86vw; }
 
