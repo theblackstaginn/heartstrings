@@ -100,9 +100,10 @@
   }
 
   /* ===========================
-     EMBERS (TRUE SLOW MODE)
-     - time-based movement (DPR + refresh-rate safe)
-     - slower spawn + slower rise
+     EMBERS (MOBILE-SAFE)
+     - time-based movement
+     - iOS visualViewport sizing
+     - minimum pixel radius so embers exist on phones
      =========================== */
 
   function startEmbers() {
@@ -114,14 +115,18 @@
 
     let W = 0, H = 0, dpr = 1;
 
-    // Feel controls
-    const TARGET_COUNT = 85;        // fewer particles reads "embers", not "sparks"
-    const SPEED_MIN = 0.035;        // units per second in normalized space (y 0..1)
-    const SPEED_MAX = 0.090;        // slower than your per-frame version
-    const ALPHA_MIN = 0.16;         // slightly dimmer = less "busy"
-    const ALPHA_MAX = 0.42;
-    const WOBBLE_SPEED = 0.75;      // radians/sec
-    const DRIFT_STRENGTH = 0.010;   // normalized units/sec (tiny)
+    // Feel controls (slow + ember-like)
+    const TARGET_COUNT = 80;
+    const SPEED_MIN = 0.018;        // slower
+    const SPEED_MAX = 0.055;
+    const ALPHA_MIN = 0.14;
+    const ALPHA_MAX = 0.38;
+    const WOBBLE_SPEED = 0.65;      // radians/sec
+    const DRIFT_STRENGTH = 0.008;   // normalized units/sec
+
+    // Critical: guarantee visibility on small screens
+    const MIN_RADIUS_PX = 1.2;      // <-- this is why mobile was "empty"
+    const MAX_RADIUS_PX = 3.6;
 
     const parts = [];
 
@@ -129,17 +134,27 @@
       return {
         x: Math.random(),
         y: Math.random(),
-        r: 0.9 + Math.random() * 2.1,
+        r: 0.9 + Math.random() * 2.2,  // "intent" radius; final is clamped in pixels
         v: SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN),
         a: ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN),
         wob: Math.random() * Math.PI * 2
       };
     }
 
+    function getViewport() {
+      const vw = window.visualViewport?.width ?? document.documentElement.clientWidth ?? window.innerWidth;
+      const vh = window.visualViewport?.height ?? document.documentElement.clientHeight ?? window.innerHeight;
+      return {
+        w: Math.max(1, Math.floor(vw)),
+        h: Math.max(1, Math.floor(vh))
+      };
+    }
+
     function resize() {
       dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      W = Math.max(1, Math.floor(window.innerWidth));
-      H = Math.max(1, Math.floor(window.innerHeight));
+      const vp = getViewport();
+      W = vp.w;
+      H = vp.h;
 
       c.width = Math.floor(W * dpr);
       c.height = Math.floor(H * dpr);
@@ -155,7 +170,6 @@
     let lastT = performance.now();
 
     function tick(now) {
-      // delta time in seconds (clamped to avoid tab-switch jumps)
       const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000));
       lastT = now;
 
@@ -163,24 +177,20 @@
       ctx.globalCompositeOperation = "lighter";
 
       for (const p of parts) {
-        // rise (time-based)
         p.y -= p.v * dt;
 
-        // drift + wobble (time-based)
         p.wob += WOBBLE_SPEED * dt;
         p.x += Math.sin(p.wob + p.y * 3.2) * (DRIFT_STRENGTH * dt);
 
-        // wrap / respawn
         if (p.y < -0.08) {
           p.y = 1.08;
           p.x = Math.random();
           p.v = SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN);
           p.a = ALPHA_MIN + Math.random() * (ALPHA_MAX - ALPHA_MIN);
-          p.r = 0.9 + Math.random() * 2.1;
+          p.r = 0.9 + Math.random() * 2.2;
           p.wob = Math.random() * Math.PI * 2;
         }
 
-        // keep x in range without snapping
         if (p.x < -0.05) p.x = 1.05;
         if (p.x > 1.05) p.x = -0.05;
 
@@ -189,12 +199,19 @@
 
         ctx.globalAlpha = p.a;
 
-        // scale particle radius gently with screen width
-        const radius = p.r * (W / 1600);
+        // Convert intent radius to pixels, clamp so mobile is visible
+        const widthScale = Math.max(0.6, Math.min(1.15, W / 900)); // gentle
+        const rPx = Math.max(MIN_RADIUS_PX, Math.min(MAX_RADIUS_PX, p.r * widthScale));
+
+        // Soft glow: draw twice (core + halo) for visibility without "spark" vibe
+        ctx.beginPath();
+        ctx.arc(x, y, rPx * 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,140,70,0.55)";
+        ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,170,90,1)";
+        ctx.arc(x, y, rPx, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,175,95,1)";
         ctx.fill();
       }
 
@@ -205,6 +222,9 @@
 
     resize();
     window.addEventListener("resize", resize, { passive: true });
+    window.visualViewport?.addEventListener("resize", resize, { passive: true });
+    window.visualViewport?.addEventListener("scroll", resize, { passive: true });
+
     requestAnimationFrame(tick);
   }
 
