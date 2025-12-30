@@ -15,10 +15,10 @@
   --bg1:#0b0e13;
 
   /* Heartstrings background texture (BASE) */
-  --charcoalTex: url("assets/apoth-bg.png");
+  --charcoalTex: url("./assets/apoth-bg.png");
 
   /* Heartstrings frame overlay (FULLSCREEN) */
-  --frameImg: url("assets/heartstrings-frame.png");
+  --frameImg: url("./assets/heartstrings-frame.png");
   --frameOpacity: .96;
 
   /* Copper */
