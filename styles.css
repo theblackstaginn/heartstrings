@@ -141,9 +141,13 @@ body::after{
   position: relative;
   z-index: 3;
 
+  /* ✅ pulled in so glass doesn't touch the frame */
   width: min(900px, 84vw);
+
   height: min(92vh, 980px);
-  margin: clamp(16px, 3.5vh, 44px) auto;
+
+  /* ✅ more breathing room between top frame and header */
+  margin: clamp(28px, 5.5vh, 64px) auto;
 
   display: flex;
   flex-direction: column;
@@ -344,7 +348,8 @@ body::after{
     --sectionMaxW: 92vw;
   }
 
-  .panel{ width: 94vw; }
+  /* ✅ pulled in on mobile (was 94vw) */
+  .panel{ width: 86vw; }
 
   .cornerBtn{
     width: 68px;
