@@ -9,7 +9,7 @@
   <link rel="apple-touch-icon" href="icon-512.png" />
   <meta name="theme-color" content="#050609" />
 
-  <link rel="stylesheet" href="styles.css?v=20251229h" />
+  <link rel="stylesheet" href="styles.css?v=20251230a" />
 </head>
 
 <body>
@@ -17,7 +17,7 @@
   <!-- keep rune canvas for parity (we’ll just not draw runes on Heartstrings) -->
   <canvas id="runes" aria-hidden="true"></canvas>
 
-  <!-- ✅ NEW: full-screen frame overlay (fits any screen like rune border) -->
+  <!-- full-screen frame overlay -->
   <div class="frame" aria-hidden="true"></div>
 
   <main class="panel" aria-label="Heartstrings Apothecary">
@@ -27,7 +27,6 @@
       <div class="sub copper">Small-batch • Rotating seasonally • Prices as listed</div>
     </header>
 
-    <!-- ✅ MUST be id="menu" so scrolling works -->
     <section class="menu" id="menu" role="region" aria-label="Apothecary offerings">
       <div class="loading">Loading offerings…</div>
     </section>
@@ -37,6 +36,6 @@
     </div>
   </main>
 
-  <script src="app.js?v=20251229h" defer></script>
+  <script src="app.js?v=20251230a" defer></script>
 </body>
 </html>
