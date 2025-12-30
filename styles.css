@@ -14,11 +14,12 @@
   --bg0:#050609;
   --bg1:#0b0e13;
 
-  /* Heartstrings background texture (BASE) */
-  --charcoalTex: url("./assets/apoth-bg.png");
-
-  /* Heartstrings frame overlay (FULLSCREEN) */
-  --frameImg: url("./assets/heartstrings-frame.png");
+  /* ✅ IMPORTANT:
+     Use absolute paths for GitHub Pages subfolder deployments.
+     If your site is /heartstrings/, these must start with /heartstrings/
+  */
+  --charcoalTex: url("/heartstrings/assets/apoth-bg.png");
+  --frameImg: url("/heartstrings/assets/heartstrings-frame.png");
   --frameOpacity: .96;
 
   /* Copper */
@@ -39,19 +40,15 @@
   --pad: clamp(14px, 2.2vw, 22px);
   --radius: 18px;
 
-  /* Spacing logic */
   --wardSafeX: 34px;
   --wardSafeY: 44px;
 
-  /* Header button safety */
   --btnRailPad: 18px;
   --btnGap: 16px;
 
-  /* Readability tuning */
   --menuMaxW: 880px;
   --sectionMaxW: 760px;
 
-  /* Embers */
   --emberOpacity: .85;
 }
 
@@ -61,26 +58,29 @@ html, body{
   height: 100%;
   margin: 0;
   padding: 0;
-  background: var(--bg0); /* HARD fallback (kills any white) */
+  background: var(--bg0); /* ✅ never white */
 }
 
 body{
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   color: var(--text);
 
-  /* ✅ critical: body never scrolls */
+  /* ✅ body never scrolls; menu scrolls inside */
   overflow: hidden;
 
-  /* ✅ FIX: apoth-bg is the REAL base background (not just a blend overlay) */
-  background:
+  /* ✅ Base background always dark even if PNG fails */
+  background-color: var(--bg0);
+
+  /* ✅ Put the PNG in the stack, but keep gradients as mood */
+  background-image:
     radial-gradient(120% 90% at 50% 12%, rgba(255,255,255,.05), transparent 60%),
     radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.82) 100%),
     linear-gradient(180deg, rgba(11,14,19,.72), rgba(5,6,9,.92)),
     var(--charcoalTex);
+
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
   background-size: cover, cover, cover, cover;
   background-position: center, center, center, center;
-  background-attachment: scroll, scroll, scroll, scroll;
 }
 
 /* film grain */
@@ -96,21 +96,21 @@ body::before{
     repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.02) 1px 3px);
 }
 
-/* OPTIONAL: extra texture shimmer (safe; not required for “no white”) */
+/* subtle texture lift (optional) */
 body::after{
   content:"";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: .14;                 /* reduced so it can't “wash out” */
+  opacity: .14;
   background-image: var(--charcoalTex);
   background-repeat: repeat;
   background-size: 900px 900px;
-  mix-blend-mode: overlay;       /* gentler than soft-light in dark scenes */
+  mix-blend-mode: overlay;
 }
 
-/* FX canvases (never block interaction) */
+/* FX canvases */
 #embers, #runes{
   position: fixed;
   inset: 0;
@@ -130,7 +130,7 @@ body::after{
 
   background-image: var(--frameImg);
   background-repeat: no-repeat;
-  background-size: 100% 100%; /* stretch to fit any screen */
+  background-size: 100% 100%;
   background-position: center;
   opacity: var(--frameOpacity);
 
@@ -223,12 +223,6 @@ body::after{
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.cornerBtn:hover{
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.48),
-    inset 0 -2px 7px rgba(0,0,0,.45),
-    0 14px 30px rgba(0,0,0,.65);
-}
 .cornerBtn:active{ transform: translateY(1px); }
 
 .sub{
@@ -314,7 +308,7 @@ body::after{
   z-index: 4;
 }
 
-/* Primary text -> copper */
+/* Copper text */
 .kicker,
 .sectionTitle,
 .name,
@@ -329,7 +323,6 @@ body::after{
     0 14px 26px rgba(0,0,0,.72);
 }
 
-/* Small text stays whitish */
 .town,
 .sub,
 .desc,
@@ -339,10 +332,7 @@ body::after{
   background: none;
 }
 
-/* ===========================
-   MOBILE
-   =========================== */
-
+/* MOBILE */
 @media (max-width: 520px){
   :root{
     --wardSafeX: 54px;
