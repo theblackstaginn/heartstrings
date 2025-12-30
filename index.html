@@ -3,69 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f14" />
   <title>Heartstrings Apothecary</title>
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="icon-512.png" />
+  <meta name="theme-color" content="#050609" />
+
+  <link rel="stylesheet" href="styles.css?v=20251229h" />
 </head>
 
 <body>
-  <!-- Embers layer (canvas) -->
   <canvas id="embers" aria-hidden="true"></canvas>
+  <!-- keep rune canvas for parity (we’ll just not draw runes on Heartstrings) -->
+  <canvas id="runes" aria-hidden="true"></canvas>
 
-  <main class="stage" aria-label="Heartstrings Apothecary">
-    <!-- Frame/border image (you supply asset) -->
-    <div class="border" aria-hidden="true"></div>
+  <main class="panel" aria-label="Heartstrings Apothecary">
+    <header class="top">
+      <div class="kicker copper">HEARTSTRINGS APOTHECARY</div>
+      <div class="town">Inside The Black Stag Inn • Dahlonega, Georgia</div>
 
-    <!-- Scrollable content area inside the frame -->
-    <section class="panel" role="region" aria-label="Apothecary content" tabindex="0">
-      <header class="head">
-        <div class="brand">
-          <div class="sigil" aria-hidden="true"></div>
-          <div class="titles">
-            <h1>Heartstrings Apothecary</h1>
-            <p class="tag">Ritual goods, remedies, and quiet curiosities.</p>
-          </div>
-        </div>
+      <!-- Same header zone, different actions -->
+      <div class="menuHeader" aria-label="Apothecary actions">
+        <a class="cornerBtn" href="#" id="orderBtn" aria-label="Browse offerings">BROWSE<br>OFFERINGS</a>
+        <a class="cornerBtn" href="#contact" id="callBtn" aria-label="Ask at front desk">ASK AT<br>DESK</a>
+      </div>
 
-        <div class="meta">
-          <div class="pill">Dahlonega, GA</div>
-          <div class="pill">Inside The Black Stag Inn</div>
-        </div>
-      </header>
+      <div class="sub copper">Small-batch • Rotating seasonally • Prices as listed</div>
+    </header>
 
-      <div class="rule" aria-hidden="true"></div>
-
-      <div id="content" class="content" aria-live="polite"></div>
-
-      <footer class="foot">
-        <div class="rule soft" aria-hidden="true"></div>
-
-        <div class="fine">
-          <div class="fineRow">
-            <span class="label">Note</span>
-            <span class="value">
-              Our items are ritual tools and curios. Nothing here replaces professional medical care.
-            </span>
-          </div>
-          <div class="fineRow">
-            <span class="label">Hours</span>
-            <span class="value">Seasonal — updated in-store.</span>
-          </div>
-          <div class="fineRow">
-            <span class="label">Contact</span>
-            <span class="value">Ask at the front desk.</span>
-          </div>
-        </div>
-
-        <div class="copyright">
-          © <span id="yr"></span> Heartstrings Apothecary
-        </div>
-      </footer>
+    <section class="menu" id="menu" role="region" aria-label="Apothecary offerings">
+      <div class="loading">Loading offerings…</div>
     </section>
+
+    <div id="contact" class="footerNote" aria-label="Contact note">
+      Ask at the front desk for availability, current drops, and special requests.
+    </div>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20251229h" defer></script>
 </body>
 </html>
